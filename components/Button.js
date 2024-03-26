@@ -1,7 +1,11 @@
 import styles from "./Button.module.scss";
 
-const Button = ({ label }) => {
-  return <button className={styles.btn}>{label}</button>;
+const Button = ({ label, clickhandler }) => {
+  return (
+    <button className={styles.btn} onClick={clickhandler}>
+      {label}
+    </button>
+  );
 };
 
 export default Button;
