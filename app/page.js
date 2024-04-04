@@ -1,42 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import ButtonDemo from "../components/ButtonDemo";
+import ColorPicker from "../components/ColorPicker";
+import PeoplePicker from "../components/PeoplePicker";
 
-import Button from "../components/Button";
-
-import Colorpicker from "../components/ColorPicker";
+import { getPeople } from "../lib/api";
 
 const Homepage = () => {
-  const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-
+  const peopleArr = getPeople();
+  //console.log({ peopleArr });
   return (
     <div>
-      <h1> Weather App</h1>
-      <h2> Count: {count}</h2>
-      <Button label="Increment" clickhandler={() => setCount(count + 1)}>
-        increment
-      </Button>
-      <Button label="Decrement" clickhandler={() => setCount(count - 1)}>
-        decrement
-      </Button>
-      <Button label="Download" />
-      <Button label="Register Now" />
-      <Button label="Learn more" />
-
-      {count > 5 && <div>special message</div>}
-      <br />
-      <Button
-        label={isVisible ? "Hide message" : "Show message"}
-        clickhandler={() => {
-          setIsVisible(!isVisible);
-        }}
-      />
-      {isVisible && <p> Hello World!</p>}
-
-      <Colorpicker />
+      <h1>Weather app</h1>
+      <PeoplePicker people={peopleArr} />
+      <ButtonDemo />
+      <ColorPicker />
     </div>
   );
 };
-
 export default Homepage;

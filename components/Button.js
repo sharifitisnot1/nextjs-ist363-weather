@@ -1,15 +1,16 @@
 import styles from "./Button.module.scss";
 
-const Button = ({ backgroundColor, label, clickhandler }) => {
+const Button = ({ backgroundColor, clickHandler, label }) => {
   return (
     <button
       className={styles.btn}
-      onClick={clickhandler}
-      style={{ backgroundColor: backgroundColor }}
+      onClick={clickHandler}
+      style={{
+        backgroundColor: backgroundColor,
+      }}
     >
       {label}
     </button>
   );
 };
-
 export default Button;
