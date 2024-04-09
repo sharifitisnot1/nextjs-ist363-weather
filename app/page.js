@@ -1,5 +1,4 @@
-User
-fix code dont change improve "use client";
+"use client";
 
 import { useState, useEffect } from "react";
 
@@ -21,7 +20,7 @@ const Homepage = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [days0fWeek, setDays0fWeek] = useState(null);
-  const [activeDayIndex, setActivedayIndex] = useState[0]
+  const [activeDayIndex, setActivedayIndex] = useState(0);
 
   const peopleArr = getPeople();
 
@@ -41,37 +40,24 @@ const Homepage = () => {
       const response = await getWeatherDataByLatLon(location);
       setWeatherData(response);
     };
-    location ? fetchData() : null;
+    if (location) fetchData();
   }, [location]);
 
   useEffect(() => {
-const tempWeek = [];
-
-    weatherData &&
-      weatherData.list.filter((block) => {
+    const tempWeek = [];
+    if (weatherData) {
+      weatherData.list.forEach((block) => {
         const date = new Date(block.dt * 1000);
-        const options = { weekday: "short"};
-        const day = date.toLocaleDateString(" en-US", options);
-        if (!tempWeek.includes(day)) { 
+        const options = { weekday: "short" };
+        const day = date.toLocaleDateString("en-US", options);
+        if (!tempWeek.includes(day)) {
           tempWeek.push(day);
-
         }
-
       });
-
       setDays0fWeek(tempWeek);
-
+    }
   }, [weatherData]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await getWeatherData();
-  //     setWeatherData(response);
-  //   };
-  //   fetchData();
-  // }, []);
-
-  //console.log({ peopleArr });
   return (
     <div>
       <h1>Weather app</h1>
@@ -89,30 +75,29 @@ const tempWeek = [];
           />
         </div>
       )}
-      {/*<PeoplePicker people={peopleArr} />
-      <ButtonDemo />
-  <ColorPicker />*/}
-      {days0fWeek && <section>
-      <ul> 
-        {days0fWeek?.map((day , index) => {
-          return <li key = {index}>{day}</li>
-        })}
-      
-        </ul>
-      
-   <div> 
-    {weatherData?.list.filter((block) => {
-      const date = new Date(block.dt * 1000)
-      const options = { weekday: "short"};
-      const day = date.toLocaleDateString("en-US", options);
-      return day === days0fWeek[activeDayIndex];
-    })
-      .map((block,index) => {
-        return <p key ={index}> {block.main.temp} </p>
-      })}
-
-</div>
-    </section> 
+      {days0fWeek && (
+        <section>
+          <ul>
+            {days0fWeek.map((day, index) => (
+              <li key={index}>{day}</li>
+            ))}
+          </ul>
+          <div>
+            {weatherData.list
+              .filter((block) => {
+                const date = new Date(block.dt * 1000);
+                const options = { weekday: "short" };
+                const day = date.toLocaleDateString("en-US", options);
+                return day === days0fWeek[activeDayIndex];
+              })
+              .map((block, index) => (
+                <p key={index}> {block.main.temp} </p>
+              ))}
+          </div>
+        </section>
+      )}
+    </div>
+  ); // This was missing
 };
 
 export default Homepage;
