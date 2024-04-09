@@ -1,4 +1,5 @@
-"use client";
+User
+fix code dont change improve "use client";
 
 import { useState, useEffect } from "react";
 
@@ -19,6 +20,8 @@ const Homepage = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [days0fWeek, setDays0fWeek] = useState(null);
+  const [activeDayIndex, setActivedayIndex] = useState[0]
 
   const peopleArr = getPeople();
 
@@ -40,6 +43,25 @@ const Homepage = () => {
     };
     location ? fetchData() : null;
   }, [location]);
+
+  useEffect(() => {
+const tempWeek = [];
+
+    weatherData &&
+      weatherData.list.filter((block) => {
+        const date = new Date(block.dt * 1000);
+        const options = { weekday: "short"};
+        const day = date.toLocaleDateString(" en-US", options);
+        if (!tempWeek.includes(day)) { 
+          tempWeek.push(day);
+
+        }
+
+      });
+
+      setDays0fWeek(tempWeek);
+
+  }, [weatherData]);
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -70,7 +92,27 @@ const Homepage = () => {
       {/*<PeoplePicker people={peopleArr} />
       <ButtonDemo />
   <ColorPicker />*/}
-    </div>
-  );
+      {days0fWeek && <section>
+      <ul> 
+        {days0fWeek?.map((day , index) => {
+          return <li key = {index}>{day}</li>
+        })}
+      
+        </ul>
+      
+   <div> 
+    {weatherData?.list.filter((block) => {
+      const date = new Date(block.dt * 1000)
+      const options = { weekday: "short"};
+      const day = date.toLocaleDateString("en-US", options);
+      return day === days0fWeek[activeDayIndex];
+    })
+      .map((block,index) => {
+        return <p key ={index}> {block.main.temp} </p>
+      })}
+
+</div>
+    </section> 
 };
+
 export default Homepage;
