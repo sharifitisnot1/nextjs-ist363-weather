@@ -7,6 +7,7 @@ import Image from "next/image";
 import ButtonDemo from "../components/ButtonDemo";
 import ColorPicker from "../components/ColorPicker";
 import PeoplePicker from "../components/PeoplePicker";
+import Tabs from "../components/Tabs";
 
 import {
   getGeoLocation,
@@ -19,8 +20,9 @@ const Homepage = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [days0fWeek, setDays0fWeek] = useState(null);
-  const [activeDayIndex, setActivedayIndex] = useState(0);
+  // Renamed for consistency
+  const [daysOfWeek, setDaysOfWeek] = useState(null);
+  const [activeDayIndex, setActiveDayIndex] = useState(0);
 
   const peopleArr = getPeople();
 
@@ -31,16 +33,18 @@ const Homepage = () => {
         setLocation(position);
       })
       .catch((error) => {
-        setErrorMsg(error);
+        setErrorMsg(error.toString());
       });
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getWeatherDataByLatLon(location);
-      setWeatherData(response);
+      if (location) {
+        const response = await getWeatherDataByLatLon(location);
+        setWeatherData(response);
+      }
     };
-    if (location) fetchData();
+    fetchData();
   }, [location]);
 
   useEffect(() => {
@@ -54,7 +58,7 @@ const Homepage = () => {
           tempWeek.push(day);
         }
       });
-      setDays0fWeek(tempWeek);
+      setDaysOfWeek(tempWeek);
     }
   }, [weatherData]);
 
@@ -75,29 +79,29 @@ const Homepage = () => {
           />
         </div>
       )}
-      {days0fWeek && (
+      {daysOfWeek && (
         <section>
-          <ul>
-            {days0fWeek.map((day, index) => (
-              <li key={index}>{day}</li>
-            ))}
-          </ul>
+          <Tabs
+            activeIndex={activeDayIndex}
+            items={daysOfWeek}
+            clickHandler={setActiveDayIndex}
+          />
           <div>
-            {weatherData.list
+            {weatherData?.list
               .filter((block) => {
                 const date = new Date(block.dt * 1000);
                 const options = { weekday: "short" };
                 const day = date.toLocaleDateString("en-US", options);
-                return day === days0fWeek[activeDayIndex];
+                return day === daysOfWeek[activeDayIndex];
               })
               .map((block, index) => (
-                <p key={index}> {block.main.temp} </p>
+                <p key={index}>{block.main.temp}</p>
               ))}
           </div>
         </section>
       )}
     </div>
-  ); // This was missing
+  );
 };
 
 export default Homepage;
