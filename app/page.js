@@ -4,9 +4,7 @@ import { useState, useEffect } from "react";
 
 import Image from "next/image";
 
-import ButtonDemo from "../components/ButtonDemo";
-import ColorPicker from "../components/ColorPicker";
-import PeoplePicker from "../components/PeoplePicker";
+import List from "../components/List";
 import Tabs from "../components/Tabs";
 
 import {
@@ -68,7 +66,7 @@ const Homepage = () => {
       {errorMsg && <div>{errorMsg}</div>}
       {weatherData && (
         <div>
-          <h2>{weatherData.city.name}</h2>
+          <h2>{weatherData?.city.name}</h2>
           <p>Current temp: {weatherData.list[0].main.temp}&deg; F</p>
           <p>{weatherData.list[0].weather[0].description}</p>
           <Image
@@ -79,25 +77,18 @@ const Homepage = () => {
           />
         </div>
       )}
-      {daysOfWeek && (
+      {weatherData && daysOfWeek && (
         <section>
           <Tabs
             activeIndex={activeDayIndex}
             items={daysOfWeek}
             clickHandler={setActiveDayIndex}
           />
-          <div>
-            {weatherData?.list
-              .filter((block) => {
-                const date = new Date(block.dt * 1000);
-                const options = { weekday: "short" };
-                const day = date.toLocaleDateString("en-US", options);
-                return day === daysOfWeek[activeDayIndex];
-              })
-              .map((block, index) => (
-                <p key={index}>{block.main.temp}</p>
-              ))}
-          </div>
+          <List
+            activeIndex={activeDayIndex}
+            items={weatherData?.list}
+            daysOfWeek={daysOfWeek}
+          />
         </section>
       )}
     </div>
