@@ -1,53 +1,38 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
 import Image from "next/image";
-
+import Col from "../components/Col";
+import Row from "../components/Row";
 import List from "../components/List";
 import Tabs from "../components/Tabs";
-
-import {
-  getGeoLocation,
-  getPeople,
-  getWeatherData,
-  getWeatherDataByLatLon,
-} from "../lib/api";
+import Container from "../components/Container";
+import { getGeoLocation, getWeatherDataByLatLon } from "../lib/api";
 
 const Homepage = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  // Renamed for consistency
-  const [daysOfWeek, setDaysOfWeek] = useState(null);
+  const [daysOfWeek, setDaysOfWeek] = useState([]);
   const [activeDayIndex, setActiveDayIndex] = useState(0);
 
-  const peopleArr = getPeople();
-
   useEffect(() => {
-    getGeoLocation()
-      .then((position) => {
-        console.log(position);
+    const fetchLocationAndWeather = async () => {
+      try {
+        const position = await getGeoLocation();
         setLocation(position);
-      })
-      .catch((error) => {
-        setErrorMsg(error.toString());
-      });
+        const response = await getWeatherDataByLatLon(position);
+        setWeatherData(response);
+      } catch (error) {
+        setErrorMsg(`Error fetching data: ${error.message}`);
+      }
+    };
+    fetchLocationAndWeather();
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (location) {
-        const response = await getWeatherDataByLatLon(location);
-        setWeatherData(response);
-      }
-    };
-    fetchData();
-  }, [location]);
-
-  useEffect(() => {
-    const tempWeek = [];
     if (weatherData) {
+      const tempWeek = [];
       weatherData.list.forEach((block) => {
         const date = new Date(block.dt * 1000);
         const options = { weekday: "short" };
@@ -65,19 +50,25 @@ const Homepage = () => {
       <h1>Weather app</h1>
       {errorMsg && <div>{errorMsg}</div>}
       {weatherData && (
-        <div>
-          <h2>{weatherData?.city.name}</h2>
-          <p>Current temp: {weatherData.list[0].main.temp}&deg; F</p>
-          <p>{weatherData.list[0].weather[0].description}</p>
-          <Image
-            src={`https://openweathermap.org/img/wn/${weatherData.list[0].weather[0].icon}@2x.png`}
-            alt={`Weather icon for ${weatherData.list[0].weather[0].description}`}
-            width={100}
-            height={100}
-          />
-        </div>
+        <Container>
+          <Row>
+            <Col>
+              <h2>{weatherData.city.name}</h2>
+              <p>Current temp: {weatherData.list[0].main.temp}&deg; F</p>
+              <p>{weatherData.list[0].weather[0].description}</p>
+              <Image
+                src={`https://openweathermap.org/img/wn/${weatherData.list[0].weather[0].icon}@2x.png`}
+                alt={`Weather icon for ${weatherData.list[0].weather[0].description}`}
+                width={100}
+                height={100}
+              />
+            </Col>
+            <Col>tabs and list</Col>
+          </Row>
+        </Container>
       )}
-      {weatherData && daysOfWeek && (
+
+      {weatherData && daysOfWeek.length > 0 && (
         <section>
           <Tabs
             activeIndex={activeDayIndex}
@@ -86,7 +77,7 @@ const Homepage = () => {
           />
           <List
             activeIndex={activeDayIndex}
-            items={weatherData?.list}
+            items={weatherData.list}
             daysOfWeek={daysOfWeek}
           />
         </section>
