@@ -1,25 +1,24 @@
-// Tabs.js
 import classnames from "classnames/bind";
 
-import styles from "./Tabs.module.scss"; // Fixed typo and file extension
+import styles from "./Tabs.module.scss";
+
 const cx = classnames.bind(styles);
 
 const Tabs = ({ activeIndex, clickHandler, items }) => {
-  // Fixed typo in `activeIndex`
   return (
     <ul className={styles.tabs}>
       {items?.map((item, index) => {
-        // Moved inside the map callback, before the return statement
         const itemClasses = cx({
           tabs__item: true,
-          active: index === activeIndex, // Fixed typo in `activeIndex`
+          active: index === activeIndex,
         });
-
         return (
           <li
             key={index}
-            className={itemClasses} // Corrected variable name
-            onClick={() => clickHandler(index)}
+            className={itemClasses}
+            onClick={() => {
+              clickHandler(index);
+            }}
           >
             {item}
           </li>
@@ -28,5 +27,4 @@ const Tabs = ({ activeIndex, clickHandler, items }) => {
     </ul>
   );
 };
-
 export default Tabs;

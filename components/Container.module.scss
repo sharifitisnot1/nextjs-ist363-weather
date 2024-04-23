@@ -3,25 +3,13 @@
 .container {
   margin: 0 auto;
   padding: 0 1rem;
-  background-color: palevioletred;
+  //background-color: pink;
   @include mixins.breakpoint(sm) {
     width: 700px;
   }
-}
-
-.container {
-  margin: 0 auto;
-  padding: 0 1rem;
-  background-color: palevioletred;
   @include mixins.breakpoint(md) {
     width: 980px;
   }
-}
-
-.container {
-  margin: 0 auto;
-  padding: 0 1rem;
-  background-color: palevioletred;
   @include mixins.breakpoint(lg) {
     width: 1140px;
   }

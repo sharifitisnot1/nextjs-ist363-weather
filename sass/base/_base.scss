@@ -1,9 +1,11 @@
+@use "../abstracts/vars";
+
 h1,
 h2,
 h3,
 h4,
 h5,
-h5,
+h6,
 p,
 ul,
 li {
@@ -16,6 +18,7 @@ ul,
 li {
   list-style: none;
 }
+
 * {
   box-sizing: border-box;
 }
@@ -25,6 +28,6 @@ img {
 }
 
 body {
-  background-color: lightgrey;
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #ddd;
+  font-family: vars.$font__primary;
 }
