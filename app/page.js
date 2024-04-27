@@ -16,7 +16,7 @@ import Section from "../components/Section";
 import Tabs from "../components/Tabs";
 import Temp from "../components/Temp";
 
-import { getGeoLocation, getPeople, getWeatherDataByLatLon } from "../lib/api";
+import { getGeoLocation, getWeatherDataByLatLon } from "../lib/api";
 
 const Homepage = () => {
   const [loading, setLoading] = useState(true);
@@ -26,6 +26,7 @@ const Homepage = () => {
   const [daysOfWeek, setDaysOfWeek] = useState(null);
   const [activeDayIndex, setActiveDayIndex] = useState(0);
   const [tempUnit, setTempUnit] = useState("imperial");
+  const [backgroundColor, setBackgroundColor] = useState("#fff"); // Default background color
 
   useEffect(() => {
     getGeoLocation()
@@ -44,8 +45,42 @@ const Homepage = () => {
       setWeatherData(response);
       setLoading(false);
     };
-    location ? fetchData() : null;
+    if (location) {
+      fetchData();
+    }
   }, [location]);
+
+  useEffect(() => {
+    // Set background color based on weather condition
+    const setBackgroundColorBasedOnWeather = () => {
+      if (weatherData && weatherData.list.length > 0) {
+        const weatherCondition =
+          weatherData.list[0].weather[0].main.toLowerCase();
+        switch (weatherCondition) {
+          case "clear":
+            setBackgroundColor("#87CEEB"); // Light blue for clear skies
+            break;
+          case "clouds":
+            setBackgroundColor("#D3D3D3"); // Grey for cloudy skies
+            break;
+          case "rain":
+            setBackgroundColor("#6495ED"); // Cornflower blue for rain
+            break;
+          case "thunderstorm":
+            setBackgroundColor("#505050"); // Dark grey for storms
+            break;
+          case "snow":
+            setBackgroundColor("#FFFFFF"); // White for snow
+            break;
+          default:
+            setBackgroundColor("#F0E68C"); // Khaki for other conditions
+            break;
+        }
+      }
+    };
+
+    setBackgroundColorBasedOnWeather();
+  }, [weatherData]);
 
   useEffect(() => {
     // filter out the days of the week
@@ -56,19 +91,16 @@ const Homepage = () => {
         const date = new Date(block.dt * 1000);
         const options = { weekday: "short" };
         const day = date.toLocaleDateString("en-US", options);
-        //console.log(day);
         if (!tempWeek.includes(day)) {
           tempWeek.push(day);
         }
       });
 
     setDaysOfWeek(tempWeek);
-
-    // then set state with the days of the week
   }, [weatherData]);
 
   return (
-    <Section>
+    <Section style={{ backgroundColor: backgroundColor }}>
       {errorMsg && <div>{errorMsg}</div>}
       {loading ? (
         <Container>
@@ -124,4 +156,5 @@ const Homepage = () => {
     </Section>
   );
 };
+
 export default Homepage;
