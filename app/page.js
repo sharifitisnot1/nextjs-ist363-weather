@@ -1,6 +1,5 @@
 "use client";
 
-// core components
 import { useState, useEffect } from "react";
 
 // next js components
@@ -10,23 +9,18 @@ import Image from "next/image";
 import Button from "../components/Button";
 import Col from "../components/Col";
 import Container from "../components/Container";
-import Input from "../components/Input";
 import List from "../components/List";
 import Row from "../components/Row";
 import Section from "../components/Section";
 import Tabs from "../components/Tabs";
 import Temp from "../components/Temp";
 
-import {
-  getGeoLocation,
-  getWeatherDataByCityName,
-  getWeatherDataByLatLon,
-} from "../lib/api";
+import { getGeoLocation, getPeople, getWeatherDataByLatLon } from "../lib/api";
 
 const Homepage = () => {
   const [loading, setLoading] = useState(true);
   const [weatherData, setWeatherData] = useState(null);
-  const [locationInput, setLocationInput] = useState("");
+  const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [daysOfWeek, setDaysOfWeek] = useState(null);
   const [activeDayIndex, setActiveDayIndex] = useState(0);
@@ -35,38 +29,22 @@ const Homepage = () => {
   useEffect(() => {
     getGeoLocation()
       .then((position) => {
-        fetchWeatherByLatLon(
-          position.coords.latitude,
-          position.coords.longitude
-        );
+        console.log(position);
+        setLocation(position);
       })
       .catch((error) => {
-        setErrorMsg(error.message || "Failed to get location");
+        setErrorMsg(error);
       });
   }, []);
 
-  const fetchWeatherByLatLon = async (lat, lon) => {
-    try {
-      const response = await getWeatherDataByLatLon({ lat, lon });
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getWeatherDataByLatLon(location);
       setWeatherData(response);
       setLoading(false);
-    } catch (error) {
-      setErrorMsg("Failed to fetch weather data");
-      setLoading(false);
-    }
-  };
-
-  const fetchWeatherByCityName = async () => {
-    try {
-      setLoading(true);
-      const response = await getWeatherDataByCityName(locationInput);
-      setWeatherData(response);
-      setLoading(false);
-    } catch (error) {
-      setErrorMsg("Failed to fetch weather data");
-      setLoading(false);
-    }
-  };
+    };
+    location ? fetchData() : null;
+  }, [location]);
 
   useEffect(() => {
     // filter out the days of the week
