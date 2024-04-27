@@ -10,7 +10,7 @@ import Image from "next/image";
 import Button from "../components/Button";
 import Col from "../components/Col";
 import Container from "../components/Container";
-import Input from "../components/Input"; // Assuming you have an Input component
+import Input from "../components/Input";
 import List from "../components/List";
 import Row from "../components/Row";
 import Section from "../components/Section";
