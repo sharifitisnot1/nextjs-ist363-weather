@@ -15,7 +15,7 @@ import Section from "../components/Section";
 import Tabs from "../components/Tabs";
 import Temp from "../components/Temp";
 
-import { getGeoLocation, getPeople, getWeatherDataByLatLon } from "../lib/api";
+import { getGeoLocation, getWeatherDataByLatLon } from "../lib/api";
 
 const Homepage = () => {
   const [loading, setLoading] = useState(true);
@@ -25,6 +25,7 @@ const Homepage = () => {
   const [daysOfWeek, setDaysOfWeek] = useState(null);
   const [activeDayIndex, setActiveDayIndex] = useState(0);
   const [tempUnit, setTempUnit] = useState("imperial");
+  const [updateMsg, setUpdateMsg] = useState(""); // State to store update message
 
   useEffect(() => {
     getGeoLocation()
@@ -47,7 +48,24 @@ const Homepage = () => {
   }, [location]);
 
   useEffect(() => {
-    // filter out the days of the week
+    // Periodically update the weather data every 5 seconds
+    const interval = setInterval(() => {
+      if (location) {
+        console.log("Fetching latest weather data...");
+        getWeatherDataByLatLon(location).then((response) => {
+          setWeatherData(response);
+          setLoading(false);
+          setUpdateMsg(
+            `Weather data updated at ${new Date().toLocaleTimeString()}`
+          ); // Update message with current time
+        });
+      }
+    }, 5000); // 5000 milliseconds = 5 seconds
+
+    return () => clearInterval(interval); // Cleanup on component unmount
+  }, [location]);
+
+  useEffect(() => {
     const tempWeek = [];
 
     weatherData &&
@@ -55,15 +73,12 @@ const Homepage = () => {
         const date = new Date(block.dt * 1000);
         const options = { weekday: "short" };
         const day = date.toLocaleDateString("en-US", options);
-        //console.log(day);
         if (!tempWeek.includes(day)) {
           tempWeek.push(day);
         }
       });
 
     setDaysOfWeek(tempWeek);
-
-    // then set state with the days of the week
   }, [weatherData]);
 
   return (
@@ -101,6 +116,8 @@ const Homepage = () => {
               />
             </Col>
             <Col sm={9} md={8}>
+              {updateMsg && <div>{updateMsg}</div>}{" "}
+              {/* Display update message */}
               {weatherData && daysOfWeek && (
                 <section>
                   <Tabs
@@ -123,4 +140,5 @@ const Homepage = () => {
     </Section>
   );
 };
+
 export default Homepage;
